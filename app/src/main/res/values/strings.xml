@@ -1,0 +1,40 @@
+<resources>
+    <string name="app_name">Spotify Streamer</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_display_top10_track">DisplayTop10TrackActivity</string>
+    <string name="error_failed">Fail to get track</string>
+    <string name="artist_not_found">Artist not found</string>
+    <string name="top10">Top 10 Tracks</string>
+    <string name="tracks_empty">Track list is empty</string>
+    <string name="edittext_is_empty">Please insert some texts to search</string>
+
+
+
+    <!-- Label for the location preference [CHAR LIMIT=30] -->
+    <string name="pref_location_label">Country</string>
+    <!-- Key name for storing location in SharedPreferences [CHAR LIMIT=NONE] -->
+    <string name="pref_location_key" translatable="false">location</string>
+
+    <!-- Default postal code for location preference [CHAR LIMIT=NONE] -->
+    <string name="pref_location_default" translatable="false">US</string>
+
+    <string name="pref_country_label">Country Preference</string>
+
+    <!-- Label for metric option in temperature unit preference [CHAR LIMIT=25] -->
+    <string name="pref_country_label_us">US</string>
+
+    <!-- Label for imperial option in temperature unit preference [CHAR LIMIT=25] -->
+    <string name="pref_country_label_uk">UK</string>
+
+    <!-- Key name for temperature unit preference in SharedPreferences [CHAR LIMIT=NONE] -->
+    <string name="pref_country_key" translatable="false">country</string>
+
+    <!-- Value in SharedPreferences for metric temperature unit option [CHAR LIMIT=NONE] -->
+    <string name="pref_units_us" translatable="false">US</string>
+
+    <!-- Value in SharedPreferences for imperial temperature unit option [CHAR LIMIT=NONE] -->
+    <string name="pref_units_uk" translatable="false">UK</string>
+
+
+</resources>
