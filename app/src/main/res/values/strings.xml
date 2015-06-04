@@ -35,6 +35,7 @@
 
     <!-- Value in SharedPreferences for imperial temperature unit option [CHAR LIMIT=NONE] -->
     <string name="pref_units_uk" translatable="false">UK</string>
+    <string name="title_activity_track_selected">TrackSelectedActivity</string>
 
 
 </resources>

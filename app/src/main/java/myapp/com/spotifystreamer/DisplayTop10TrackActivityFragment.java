@@ -3,13 +3,13 @@ package myapp.com.spotifystreamer;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import java.util.ArrayList;
@@ -39,16 +39,10 @@ public class DisplayTop10TrackActivityFragment extends Fragment {
     public static String data_artist_name;
     private String LOG_TAG = DisplayTop10TrackActivity.class.getSimpleName();
 
-    private static final String NAME_ARTIST_ENTER_KEY = "name_artist_enter";
-    private static final String TOP_TRACK_KEY = "name_artist_enter";
-
-
     public String data;
     ArrayList<TrackResult> arrayOfTracks;
     TrackResult _trackResult;
     TopTrackAdapter mAdapter;
-    private Handler handler = new Handler();
-
 
     @InjectView(android.R.id.list)
     protected ListView _listView;
@@ -67,9 +61,9 @@ public class DisplayTop10TrackActivityFragment extends Fragment {
         Intent intent = getActivity().getIntent();
         if (intent != null && intent.hasExtra(Intent.EXTRA_TEXT)) {
             data = intent.getStringExtra(Intent.EXTRA_TEXT);
-            if (intent.hasExtra(NAME_ARTIST_ENTER_KEY)){
+            if (intent.hasExtra(Constant.NAME_ARTIST_ENTER_KEY)){
 //                Log.d(LOG_TAG, "success getintent "+ intent.getStringExtra(NAME_ARTIST_ENTER_KEY) );
-                data_artist_name = intent.getStringExtra(NAME_ARTIST_ENTER_KEY);
+                data_artist_name = intent.getStringExtra(Constant.NAME_ARTIST_ENTER_KEY);
 
             }
 //            To see debug spotify id
@@ -79,7 +73,7 @@ public class DisplayTop10TrackActivityFragment extends Fragment {
 
         if(savedInstanceState != null) {
             // read arrayOfTracks list from the saved state
-            arrayOfTracks = savedInstanceState.getParcelableArrayList(TOP_TRACK_KEY);
+            arrayOfTracks = savedInstanceState.getParcelableArrayList(Constant.TOP_TRACK_KEY);
             mAdapter = new TopTrackAdapter(getActivity(),
                     android.R.id.list, arrayOfTracks);
             _listView.setAdapter(mAdapter);
@@ -89,13 +83,27 @@ public class DisplayTop10TrackActivityFragment extends Fragment {
             searchTop10Track();
         }
 
+        //onClick item show the track selected
+        _listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapter, View view, int position, long id) {
+                Log.d(LOG_TAG, "Clicked");
+//                mPosition = position;
+                TrackResult track_data = mAdapter.getItem(position);
 
+                Intent intent = new Intent(getActivity(), TrackSelectedActivity.class)
+                        .putExtra(Intent.EXTRA_TEXT, track_data.album_name);
+//                        .putExtra(Constant.NAME_ARTIST_ENTER_KEY,editText.getText().toString() );
+                startActivity(intent);
+
+            }
+        });
         return rootView;
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        outState.putParcelableArrayList(TOP_TRACK_KEY, arrayOfTracks);
+        outState.putParcelableArrayList(Constant.TOP_TRACK_KEY, arrayOfTracks);
         super.onSaveInstanceState(outState);
     }
 
@@ -122,7 +130,6 @@ public class DisplayTop10TrackActivityFragment extends Fragment {
         else{
             mTrackoption.put("country", location);
         }
-
 
         spotify.getArtistTopTrack(data, mTrackoption, new Callback<Tracks>() {
             @Override
@@ -161,24 +168,16 @@ public class DisplayTop10TrackActivityFragment extends Fragment {
 
                 }
 
-                new Thread( new Runnable()
-                {
+                getActivity().runOnUiThread(new Runnable() {
                     @Override
-                    public void run()
-                    {
+                    public void run() {
                         // Do something
                         mAdapter = new TopTrackAdapter(getActivity(),
                                 android.R.id.list, arrayOfTracks);
-                        handler.post( new Runnable()
-                        {
-                            @Override
-                            public void run()
-                            {
-                                _listView.setAdapter(mAdapter);
-                            }
-                        } );
+                        _listView.setAdapter(mAdapter);
+
                     }
-                } ).start();
+                } );
             }
 
             @Override
@@ -190,14 +189,4 @@ public class DisplayTop10TrackActivityFragment extends Fragment {
 
     }
 
-    /**
-     * Sets the Action Bar for new Android versions.
-//     */
-//    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-//    private void actionBarSetup() {
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-//            ActionBar ab  = ((ActionBarActivity)getActivity()).getSupportActionBar().setSubtitle("dd");
-//            ab.setSubtitle(s);
-//        }
-//    }
 }

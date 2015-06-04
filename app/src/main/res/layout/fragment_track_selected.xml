@@ -1,0 +1,108 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    tools:context="myapp.com.spotifystreamer.TrackSelectedActivityFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center">
+
+
+        <TextView
+            android:text="artist_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/artist_name" />
+
+        <TextView
+            android:text="album name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/album_name" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/album_artwork"
+            android:src="@drawable/princess"
+            android:adjustViewBounds="true"
+           />
+
+
+        <TextView
+            android:text="track_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/textView_track_name" />
+
+        <SeekBar
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/seekBar_duration"
+            android:indeterminate="false" />
+
+         <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center">
+             <TextView
+                 android:text="0:00"
+                 android:layout_width="wrap_content"
+                 android:layout_height="wrap_content"
+                 android:id="@+id/textView_duration_min" />
+             <View
+                 android:layout_width="0dp"
+                 android:layout_height="0dp"
+                 android:layout_weight="1"
+                 />
+
+             <TextView
+                 android:text="3:00"
+                 android:layout_width="wrap_content"
+                 android:layout_height="wrap_content"
+                 android:id="@+id/textView_duration_max" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center">
+
+            <!-- Backward Button -->
+            <ImageButton
+                android:id="@+id/btnBackward"
+                android:src="@drawable/ic_skip_previous_black_48dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@null"
+                android:layout_marginRight="30dp"/>
+            <!-- Play Button -->
+            <ImageButton
+                android:id="@+id/btnPlay"
+                android:src="@drawable/ic_play_arrow_black_48dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@null"/>
+            <!-- Forward Button -->
+            <ImageButton
+                android:id="@+id/btnForward"
+                android:src="@drawable/ic_skip_next_black_48dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@null"
+                android:layout_marginLeft="30dp"/>
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+
+</ScrollView>

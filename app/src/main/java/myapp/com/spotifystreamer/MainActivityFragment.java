@@ -3,7 +3,6 @@ package myapp.com.spotifystreamer;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -89,8 +88,6 @@ public class MainActivityFragment extends Fragment {
             }
         });
 
-
-
         _listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapter, View view, int position, long id) {
@@ -100,7 +97,7 @@ public class MainActivityFragment extends Fragment {
 
                 Intent intent = new Intent(getActivity(), DisplayTop10TrackActivity.class)
                         .putExtra(Intent.EXTRA_TEXT, artist_data.spotifyId)
-                        .putExtra(Constant.NAME_ARTIST_ENTER_KEY,editText.getText().toString() );
+                        .putExtra(Constant.NAME_ARTIST_ENTER_KEY, artist_data.name );
 
                 startActivity(intent);
 
@@ -116,7 +113,6 @@ public class MainActivityFragment extends Fragment {
         return rootView;
     }
 
-
     @Override
     public void onSaveInstanceState(Bundle outState) {
         outState.putParcelableArrayList(Constant.LIST_ARTIST_STATE, arrayOfSearchArtist);
@@ -127,8 +123,6 @@ public class MainActivityFragment extends Fragment {
 
     }
 
-
-
     @Override
     public void onResume() {
         super.onResume();
@@ -136,8 +130,6 @@ public class MainActivityFragment extends Fragment {
 //      mAdapter.notifyDataSetChanged();
 
     }
-
-
 
     private void performSearch() {
         //http://stackoverflow.com/questions/9854618/hide-keyboard-after-user-searches
@@ -188,7 +180,16 @@ public class MainActivityFragment extends Fragment {
                         arrayOfSearchArtist.add(art_reslt);
 
                     }
-                    PopulateListviewFromBackground();
+
+//                    PopulateListviewFromBackground();
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            // Do something
+                            _listView.setAdapter(mAdapter);
+
+                        }
+                    });
                 }
 
                 @Override
@@ -203,30 +204,4 @@ public class MainActivityFragment extends Fragment {
     void ToastText(String s){
         Toast.makeText(getActivity(),s, Toast.LENGTH_SHORT).show();
     }
-
-    private Handler handler = new Handler();
-    void PopulateListviewFromBackground(){
-        new Thread( new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                // Do something
-//                mAdapter = new SearchArrayAdapter(getActivity(),
-//                        R.layout.list_item_search_result, arrayOfSearchArtist);
-
-//                mAdapter.notifyDataSetChanged();
-                handler.post( new Runnable()
-                {
-                    @Override
-                    public void run()
-                    {
-                        _listView.setAdapter(mAdapter);
-                    }
-                } );
-            }
-        } ).start();
-
-    }
-
 }
