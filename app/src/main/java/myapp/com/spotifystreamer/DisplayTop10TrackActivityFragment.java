@@ -39,7 +39,7 @@ public class DisplayTop10TrackActivityFragment extends Fragment {
     public static String data_artist_name;
     private String LOG_TAG = DisplayTop10TrackActivity.class.getSimpleName();
 
-    public String data;
+    private String data;
     ArrayList<TrackResult> arrayOfTracks;
     TrackResult _trackResult;
     TopTrackAdapter mAdapter;
@@ -87,13 +87,18 @@ public class DisplayTop10TrackActivityFragment extends Fragment {
         _listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapter, View view, int position, long id) {
-                Log.d(LOG_TAG, "Clicked");
+                Log.d(LOG_TAG, "Clicked on postion" + position);
 //                mPosition = position;
                 TrackResult track_data = mAdapter.getItem(position);
 
                 Intent intent = new Intent(getActivity(), TrackSelectedActivity.class)
-                        .putExtra(Intent.EXTRA_TEXT, track_data.album_name);
-//                        .putExtra(Constant.NAME_ARTIST_ENTER_KEY,editText.getText().toString() );
+                        .putExtra(Constant.NAME_ARTIST_ENTER_KEY, data_artist_name)
+                        .putExtra(Constant.ARTIST_NAME_KEY, track_data.album_name)
+                        .putExtra(Constant.URL_IMAGE_KEY, track_data.thumbnail_large)
+                        .putExtra(Constant.TRACK_NAME_KEY, track_data.track_name)
+                        .putExtra(Constant.DURATION_MS_KEY, track_data.duration_ms)
+
+                        ;
                 startActivity(intent);
 
             }
@@ -138,12 +143,12 @@ public class DisplayTop10TrackActivityFragment extends Fragment {
 
                 List<Track> tracksList = tracks.tracks;
 
-                Track obj = null;
-                String track_name = null;
-                String album_name = null;
-                String thumdnail_Large = null;
-                String thumdnail_Small = null;
-                String previewURL = null;
+                Track obj;
+                String track_name;
+                String album_name;
+                String thumbnail_Large = null;
+                String thumbnail_Small = null;
+                String previewURL;
 
                 if(tracksList.size() == 0){
                     Utils.showToastFromBackground(getResources().getString(R.string.tracks_empty), getActivity());
@@ -158,12 +163,12 @@ public class DisplayTop10TrackActivityFragment extends Fragment {
 
                     for (Image imtemp : obj.album.images) {
                         if (imtemp.height > 400 ) {
-                            thumdnail_Large = imtemp.url.toString();
+                            thumbnail_Large = imtemp.url.toString();
                         }
                         else if (imtemp.height > 200)
-                            thumdnail_Small = imtemp.url.toString();
+                            thumbnail_Small = imtemp.url.toString();
                     }
-                    _trackResult = new TrackResult(track_name, album_name, thumdnail_Large, thumdnail_Small, previewURL);
+                    _trackResult = new TrackResult(track_name, album_name, thumbnail_Large, thumbnail_Small, previewURL, obj.duration_ms);
                     arrayOfTracks.add(_trackResult);
 
                 }

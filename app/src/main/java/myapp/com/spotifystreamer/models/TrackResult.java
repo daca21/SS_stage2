@@ -13,14 +13,16 @@ public class TrackResult implements Parcelable {
     public String thumbnail_large; // 600px
     public String thumbnail_small; //200px
     public String preview_url; //use to stream audio
+    public Long duration_ms;
 
     //setter
-    public TrackResult(String name, String album_name, String thumbnail_large,String thumbnail_small, String preview_url ) {
+    public TrackResult(String name, String album_name, String thumbnail_large,String thumbnail_small, String preview_url, Long duration_ms ) {
         this.track_name = name;
         this.album_name = album_name;
         this.thumbnail_large = thumbnail_large;
         this.thumbnail_small = thumbnail_small;
         this.preview_url = preview_url;
+        this.duration_ms = duration_ms;
     }
 
 
@@ -36,6 +38,7 @@ public class TrackResult implements Parcelable {
         dest.writeString(this.thumbnail_large);
         dest.writeString(this.thumbnail_small);
         dest.writeString(this.preview_url);
+        dest.writeLong(this.duration_ms);
     }
 
     private TrackResult(Parcel in) {
@@ -44,6 +47,7 @@ public class TrackResult implements Parcelable {
         this.thumbnail_large = in.readString();
         this.thumbnail_small = in.readString();
         this.preview_url = in.readString();
+        this.duration_ms = in.readLong();
     }
 
     public static final Parcelable.Creator<TrackResult> CREATOR = new Parcelable.Creator<TrackResult>() {
