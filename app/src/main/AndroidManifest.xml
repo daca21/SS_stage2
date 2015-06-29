@@ -3,6 +3,11 @@
     package="myapp.com.spotifystreamer" >
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE"/>
 
     <application
         android:allowBackup="true"
@@ -43,6 +48,8 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="myapp.com.spotifystreamer.DisplayTop10TrackActivity" />
         </activity>
+        <service android:name=".service.myPlayService"
+            android:enabled="true"></service>
     </application>
 
 </manifest>
