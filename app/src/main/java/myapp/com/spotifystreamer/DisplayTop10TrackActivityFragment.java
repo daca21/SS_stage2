@@ -40,9 +40,12 @@ public class DisplayTop10TrackActivityFragment extends Fragment {
     private String LOG_TAG = DisplayTop10TrackActivity.class.getSimpleName();
 
     private String data;
+    private static String artistName = null;
     ArrayList<TrackResult> arrayOfTracks;
     TrackResult _trackResult;
     TopTrackAdapter mAdapter;
+
+
 
     @InjectView(android.R.id.list)
     protected ListView _listView;
@@ -91,14 +94,19 @@ public class DisplayTop10TrackActivityFragment extends Fragment {
 //                mPosition = position;
                 TrackResult track_data = mAdapter.getItem(position);
 
-                Intent intent = new Intent(getActivity(), TrackSelectedActivity.class)
-                        .putExtra(Constant.NAME_ARTIST_ENTER_KEY, data_artist_name)
-                        .putExtra(Constant.ARTIST_NAME_KEY, track_data.album_name)
-                        .putExtra(Constant.URL_IMAGE_KEY, track_data.thumbnail_large)
-                        .putExtra(Constant.TRACK_NAME_KEY, track_data.track_name)
-                        .putExtra(Constant.DURATION_MS_KEY, track_data.duration_ms)
+                Bundle bundle = new Bundle();
+                bundle.putInt("position", position);
+                bundle.putParcelableArrayList("tracks", arrayOfTracks);
+//                newFragment.setArguments(bundle);
 
-                        ;
+                Intent intent = new Intent(getActivity(), TrackSelectedActivity.class)
+//                        .putExtra(Constant.NAME_ARTIST_ENTER_KEY, data_artist_name)
+//                        .putExtra(Constant.ARTIST_NAME_KEY, track_data.album_name)
+//                        .putExtra(Constant.URL_IMAGE_KEY, track_data.thumbnail_large)
+//                        .putExtra(Constant.TRACK_NAME_KEY, track_data.track_name)
+//                        .putExtra(Constant.DURATION_MS_KEY, track_data.duration_ms)
+//                        .putExtra(Constant.URL_PREVIEW_KEY, track_data.preview_url)
+                        .putExtras(bundle);
                 startActivity(intent);
 
             }
@@ -149,6 +157,7 @@ public class DisplayTop10TrackActivityFragment extends Fragment {
                 String thumbnail_Large = null;
                 String thumbnail_Small = null;
                 String previewURL;
+//                String artistname = null;
 
                 if(tracksList.size() == 0){
                     Utils.showToastFromBackground(getResources().getString(R.string.tracks_empty), getActivity());
@@ -168,7 +177,8 @@ public class DisplayTop10TrackActivityFragment extends Fragment {
                         else if (imtemp.height > 200)
                             thumbnail_Small = imtemp.url.toString();
                     }
-                    _trackResult = new TrackResult(track_name, album_name, thumbnail_Large, thumbnail_Small, previewURL, obj.duration_ms);
+                    _trackResult = new TrackResult(track_name, album_name, thumbnail_Large,
+                            thumbnail_Small, previewURL, obj.duration_ms, data_artist_name);
                     arrayOfTracks.add(_trackResult);
 
                 }

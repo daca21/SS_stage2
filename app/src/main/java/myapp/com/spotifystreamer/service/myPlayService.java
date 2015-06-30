@@ -142,7 +142,7 @@ public class myPlayService extends Service implements OnCompletionListener,
                 PhoneStateListener.LISTEN_CALL_STATE);
 
         // Insert notification start
-        initNotification();
+//        initNotification();
 
         sntAudioLink = intent.getExtras().getString("sentAudioLink");
         mediaPlayer.reset();
@@ -150,9 +150,10 @@ public class myPlayService extends Service implements OnCompletionListener,
         // Set up the MediaPlayer data source using the strAudioLink value
         if (!mediaPlayer.isPlaying()) {
             try {
-                mediaPlayer
-                        .setDataSource(URL_STRING
-                                + sntAudioLink);
+//                mediaPlayer
+//                        .setDataSource(URL_STRING
+//                                + sntAudioLink);
+                mediaPlayer.setDataSource(sntAudioLink);
 
                 // Send message to Activity to display progress dialogue
                 sendBufferingBroadcast();
@@ -286,7 +287,7 @@ public class myPlayService extends Service implements OnCompletionListener,
         }
 
         // Cancel the notification
-        cancelNotification();
+//        cancelNotification();
 
         // Unregister headsetReceiver
         unregisterReceiver(headsetReceiver);
@@ -419,12 +420,12 @@ public class myPlayService extends Service implements OnCompletionListener,
         String ns = Context.NOTIFICATION_SERVICE;
         NotificationManager mNotificationManager = (NotificationManager) getSystemService(ns);
         int icon = R.drawable.ic_airplay_white_48dp;
-        CharSequence tickerText = "Tutorial: Music In Service";
+        CharSequence tickerText = "PLaying: Music In Service";
         long when = System.currentTimeMillis();
         Notification notification = new Notification(icon, tickerText, when);
         notification.flags = Notification.FLAG_ONGOING_EVENT;
         Context context = getApplicationContext();
-        CharSequence contentTitle = "Music In Service App Tutorial";
+        CharSequence contentTitle = "Music In Spotify Service ";
         CharSequence contentText = "Listen To Music While Performing Other Tasks";
         Intent notificationIntent = new Intent(this, TrackSelectedActivityFragment.class);
         PendingIntent contentIntent = PendingIntent.getActivity(context, 0,

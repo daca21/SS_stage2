@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 import android.view.LayoutInflater;
@@ -24,16 +23,19 @@ import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
+
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import butterknife.OnClick;
+import myapp.com.spotifystreamer.models.TrackResult;
 import myapp.com.spotifystreamer.service.myPlayService;
-
 
 
 /**
  * A placeholder fragment containing a simple view.
  */
-public class TrackSelectedActivityFragment extends Fragment  implements OnSeekBarChangeListener{
+public class TrackSelectedActivityFragment extends android.support.v4.app.DialogFragment implements OnSeekBarChangeListener{
 
     private String LOg_TAG = TrackSelectedActivityFragment.class.getSimpleName();
 
@@ -41,10 +43,13 @@ public class TrackSelectedActivityFragment extends Fragment  implements OnSeekBa
 //    private ImageButton buttonPlayStop;
 
     // -- PUT THE NAME OF YOUR AUDIO FILE HERE...URL GOES IN THE SERVICE
-    String strAudioLink = "10.mp3";
+    String strAudioLink = null;
 
     private boolean isOnline;
     private boolean boolMusicPlaying = false;
+    int position = 0;
+    ArrayList<TrackResult> listOfTracks;
+
     TelephonyManager telephonyManager;
     PhoneStateListener listener;
 
@@ -61,9 +66,6 @@ public class TrackSelectedActivityFragment extends Fragment  implements OnSeekBa
     // Progress dialogue and broadcast receiver variables
     boolean mBufferBroadcastIsRegistered;
     private ProgressDialog pdBuff = null;
-
-
-
 
     @InjectView(R.id.artist_name)
     protected TextView artist_name;
@@ -103,7 +105,6 @@ public class TrackSelectedActivityFragment extends Fragment  implements OnSeekBa
 
             // --- set up seekbar intent for broadcasting new position to service ---
             intent = new Intent(BROADCAST_SEEKBAR);
-
 //            initViews();
 //            setListeners();
         } catch (Exception e) {
@@ -120,41 +121,15 @@ public class TrackSelectedActivityFragment extends Fragment  implements OnSeekBa
         View rootView = inflater.inflate(R.layout.fragment_track_selected, container, false);
         ButterKnife.inject(this, rootView);
 
+        Bundle bundle = getArguments();
+        position = bundle.getInt("position");
+        listOfTracks = bundle.getParcelableArrayList("tracks");
 
-
-        // The display Activity called via intent.  Inspect the intent for forecast data.
-        Intent intent = getActivity().getIntent();
-        if (intent != null && intent.hasExtra(Constant.NAME_ARTIST_ENTER_KEY)) {
-            data = intent.getStringExtra(Constant.NAME_ARTIST_ENTER_KEY);
-            artist_name.setText(data);
-
-            if (intent.hasExtra(Constant.ARTIST_NAME_KEY)){
-                String data_album_name = intent.getStringExtra(Constant.ARTIST_NAME_KEY);
-                album_name.setText(data_album_name);
-            }
-            if (intent.hasExtra(Constant.URL_IMAGE_KEY)){
-                String data = intent.getStringExtra(Constant.URL_IMAGE_KEY);
-                Picasso.with(getActivity())
-                        .load(data).into(artwork_url);
-            }
-            if (intent.hasExtra(Constant.TRACK_NAME_KEY)){
-                String data = intent.getStringExtra(Constant.TRACK_NAME_KEY);
-                track_name.setText(data);
-            }
-
-//            initViews();
-            setListeners();
-
-//            if (intent.hasExtra(Constant.DURATION_MS_KEY)){
-//                String data = intent.getStringExtra(Constant.DURATION_MS_KEY);
-//                duratiton_max.setText(data);
-//            }
-        }
-
+        initViews(position);
+//        updateUI();
+        setListeners();
         return rootView;
     }
-
-
 
     // -- Broadcast Receiver to update position of seekbar from service --
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
@@ -174,18 +149,79 @@ public class TrackSelectedActivityFragment extends Fragment  implements OnSeekBa
         seekBar.setMax(seekMax);
         seekBar.setProgress(seekProgress);
         if (songEnded == 1) {
-//            buttonPlayStop.setBackgroundResource(R.drawable.ic_pause_black_48dp);
+            buttonPlayStop.setBackgroundResource(R.drawable.ic_play_arrow_black_48dp);
+//            togglePlayButton(true);
+            boolMusicPlaying = true;
+        }else{
+            togglePlayButton(true);
+            boolMusicPlaying = true;
         }
     }
 
-
     // --- Set up initial screen ---
-    private void initViews() {
-//        buttonPlayStop = (ImageButton) getView().findViewById(R.id.btnPlay);
-//        buttonPlayStop.setBackgroundResource(R.drawable.ic_pause_black_48dp);
+    private void initViews(int position) {
+        if (boolMusicPlaying) {
+            buttonPlayStop.setBackgroundResource(R.drawable.ic_pause_black_48dp);
+        }else{
+            buttonPlayStop.setBackgroundResource(R.drawable.ic_play_arrow_black_48dp);
 
-        // --Reference seekbar in main.xml
-//        seekBar = (SeekBar)getView(). findViewById(R.id.seekBar_duration);
+        }
+        TrackResult track = listOfTracks.get(position);
+        album_name.setText(track.album_name);
+        artist_name.setText(track.artist_name);
+        track_name.setText(track.track_name);
+        Picasso.with(getActivity())
+                .load(track.thumbnail_large).into(artwork_url);
+        strAudioLink = track.preview_url;
+    }
+
+
+    @OnClick(R.id.btnBackward)
+    public void playBackward(ImageButton button){
+        if (position == 0) {
+            Toast.makeText(getActivity(), getActivity().getString(R.string.no_further), Toast.LENGTH_SHORT).show();
+        } else {
+            stopMyPlayService();
+            position = position - 1;
+            playAudio(position);
+            initViews(position);
+        }
+    }
+
+//    @OnClick(R.id.btnPlay)
+//    public void playNow(){
+//        if (!boolMusicPlaying) {
+//            togglePlayButton(true);
+//            playAudio(position);
+//            boolMusicPlaying = true;
+//        }
+//        else {
+//            if (boolMusicPlaying) {
+//                togglePlayButton(false);
+//                stopMyPlayService();
+//                boolMusicPlaying = false;
+//            }
+//            else {
+//                // Was paused, now play it.
+//                playAudio(position);
+//                togglePlayButton(false);
+//            }
+//        }
+//    }
+
+    //Play Forward
+    @OnClick(R.id.btnForward)
+    public void playForward(ImageButton buton){
+        if (position == listOfTracks.size() - 1) {
+            Toast.makeText(getActivity(), getActivity().getString(R.string.no_further), Toast.LENGTH_SHORT).show();
+        } else {
+
+            stopMyPlayService();
+            position = position +1;
+            initViews(position);
+            playAudio(position);
+//            buttonPlayStop.setBackgroundResource(R.drawable.ic_pause_black_48dp);
+        }
     }
 
     // --- Set up listeners ---
@@ -203,15 +239,30 @@ public class TrackSelectedActivityFragment extends Fragment  implements OnSeekBa
     // --- invoked from ButtonPlayStop listener above ----
     private void buttonPlayStopClick() {
         if (!boolMusicPlaying) {
-            buttonPlayStop.setBackgroundResource(R.drawable.ic_pause_black_48dp);
-            playAudio();
+            togglePlayButton(false);
+            playAudio(position);
             boolMusicPlaying = true;
         } else {
             if (boolMusicPlaying) {
-                buttonPlayStop.setBackgroundResource(R.drawable.ic_play_arrow_black_48dp);
+                togglePlayButton(true);
                 stopMyPlayService();
                 boolMusicPlaying = false;
             }
+//            else {
+//                // Was paused, now play it.
+//                playAudio(position);
+//                togglePlayButton(false);
+//            }
+        }
+    }
+
+    public void togglePlayButton(boolean isPlaying) {
+        if (isPlaying == false) {
+//            buttonPlayStop.setImageResource(R.drawable.ic_play_arrow_black_48dp);
+            buttonPlayStop.setBackgroundResource(R.drawable.ic_play_arrow_black_48dp);
+        } else {
+//            buttonPlayStop.setImageResource(R.drawable.ic_pause_black_48dp);
+            buttonPlayStop.setBackgroundResource(R.drawable.ic_pause_black_48dp);
         }
     }
 
@@ -225,18 +276,13 @@ public class TrackSelectedActivityFragment extends Fragment  implements OnSeekBa
             } catch (Exception e) {
                 // Log.e(TAG, "Error in Activity", e);
                 // TODO Auto-generated catch block
-
                 e.printStackTrace();
                 Toast.makeText(
-
                         getActivity(),
-
                         e.getClass().getName() + " " + e.getMessage(),
-
                         Toast.LENGTH_LONG).show();
             }
         }
-
         try {
             getActivity().stopService(serviceIntent);
 
@@ -250,28 +296,22 @@ public class TrackSelectedActivityFragment extends Fragment  implements OnSeekBa
     }
 
     // --- Start service and play music ---
-    private void playAudio() {
+    private void playAudio(int position) {
 
         checkConnectivity();
         if (isOnline) {
             stopMyPlayService();
-
             serviceIntent.putExtra("sentAudioLink", strAudioLink);
 
             try {
                 getActivity().startService(serviceIntent);
             } catch (Exception e) {
-
                 e.printStackTrace();
                 Toast.makeText(
-
                         getActivity(),
-
                         e.getClass().getName() + " " + e.getMessage(),
-
                         Toast.LENGTH_LONG).show();
             }
-
             // -- Register receiver for seekbar--
             getActivity().registerReceiver(broadcastReceiver, new IntentFilter(
                     myPlayService.BROADCAST_ACTION));
@@ -280,7 +320,7 @@ public class TrackSelectedActivityFragment extends Fragment  implements OnSeekBa
 
         } else {
             AlertDialog alertDialog = new AlertDialog.Builder(getActivity()).create();
-            alertDialog.setTitle("Network Not Connected...");
+            alertDialog.setTitle(getActivity().getString(R.string.not_connected));
             alertDialog.setMessage("Please connect to a network and try again");
             alertDialog.setButton("OK", new DialogInterface.OnClickListener() {
                 @Override

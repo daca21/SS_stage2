@@ -1,5 +1,6 @@
 package myapp.com.spotifystreamer;
 
+import android.support.v4.app.DialogFragment;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -12,6 +13,12 @@ public class TrackSelectedActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_track_selected);
+
+        DialogFragment newFragment = new TrackSelectedActivityFragment();
+        newFragment.setArguments(getIntent().getExtras());
+        getSupportFragmentManager().beginTransaction()
+                .add(R.id.fragmentPLayer, newFragment)
+                .commit();
     }
 
 
