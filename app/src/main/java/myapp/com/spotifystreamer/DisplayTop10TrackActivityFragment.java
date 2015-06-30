@@ -103,8 +103,7 @@ public class DisplayTop10TrackActivityFragment extends Fragment {
         _listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapter, View view, int position, long id) {
-                Log.d(LOG_TAG, "Clicked on postion" + position);
-//                mPosition = position;
+//                Log.d(LOG_TAG, "Clicked on postion: " + position);
 //                TrackResult track_data = mAdapter.getItem(position);
                 FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
                 DialogFragment newFragment = new TrackSelectedActivityFragment();

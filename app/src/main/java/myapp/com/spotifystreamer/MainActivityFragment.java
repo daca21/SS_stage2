@@ -43,7 +43,6 @@ public class MainActivityFragment extends Fragment {
     private String LOG_TAG = MainActivityFragment.class.getSimpleName();
 
 
-
     public interface Callbacks {
         /**
          * Callback for when an item has been selected.
@@ -100,6 +99,11 @@ public class MainActivityFragment extends Fragment {
             mAdapter = new SearchArrayAdapter(getActivity(),
                     R.layout.list_item_search_result, arrayOfSearchArtist);
             _listView.setAdapter(mAdapter);
+//            if (mPosition != ListView.INVALID_POSITION) {
+//                // If we don't need to restart the loader, and there's a desired position to restore
+//                // to, do so now.
+//                _listView.smoothScrollToPosition(mPosition);
+//            }
         } else {
             // load the  list
             arrayOfSearchArtist = new ArrayList<>();
@@ -196,12 +200,10 @@ public class MainActivityFragment extends Fragment {
                     }
 
                     for (int i = 0; i < items.size(); i++) {
-
                         obj = items.get(i);
                         name = obj.name;
                         spotify_id = obj.id;
 //                        Log.d(LOG_TAG, name + " - id :" + spotify_id);
-
                         for (Image imtemp : obj.images) {
                             if (imtemp.width > 75 ) {
 //                                Log.d(LOG_TAG, imtemp.url.toString());
