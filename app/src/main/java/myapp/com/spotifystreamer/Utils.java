@@ -1,16 +1,31 @@
 package myapp.com.spotifystreamer;
 
 import android.app.Activity;
+import android.content.Context;
+import android.net.ConnectivityManager;
 import android.widget.Toast;
 
 import java.util.concurrent.TimeUnit;
 
 /**
- * Created by  on 6/1/15.
+ * Created by on 6/1/15.
  */
 public class Utils {
 
 
+
+
+    public static boolean checkConnectivity(Context mcontext) {
+        ConnectivityManager cm = (ConnectivityManager) mcontext.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        if (cm.getNetworkInfo(ConnectivityManager.TYPE_MOBILE)
+                .isConnectedOrConnecting()
+                || cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI)
+                .isConnectedOrConnecting())
+            return  true;
+        else
+            return false;
+    }
 //    final public void ToastText(final String s, Context mcontext){
 //        Toast.makeText(mcontext, s, Toast.LENGTH_SHORT).show();
 //    }

@@ -1,7 +1,7 @@
 package myapp.com.spotifystreamer;
 
+import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -42,6 +42,17 @@ public class MainActivityFragment extends Fragment {
 
     private String LOG_TAG = MainActivityFragment.class.getSimpleName();
 
+
+
+    public interface Callbacks {
+        /**
+         * Callback for when an item has been selected.
+         */
+        public void onItemSelected(ArtistResult artist);
+    }
+
+    public Callbacks mCallBack;
+
     ArrayAdapter<ArtistResult> mAdapter;
     ArtistResult art_reslt;
     ArrayList<ArtistResult> arrayOfSearchArtist;
@@ -55,6 +66,27 @@ public class MainActivityFragment extends Fragment {
 
     @InjectView(R.id.editText_search)
     protected EditText editText;
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        try {
+            mCallBack = (Callbacks) activity;
+        }catch (IllegalStateException e){
+
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mCallBack = null;
+    }
+
+    public static MainActivityFragment getInstance (){
+        MainActivityFragment mainActivityFragment = new MainActivityFragment();
+        return mainActivityFragment;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -94,12 +126,12 @@ public class MainActivityFragment extends Fragment {
                 Log.d(LOG_TAG, "Clicked");
                 mPosition = position;
                 ArtistResult artist_data = mAdapter.getItem(position);
-
-                Intent intent = new Intent(getActivity(), DisplayTop10TrackActivity.class)
-                        .putExtra(Intent.EXTRA_TEXT, artist_data.spotifyId)
-                        .putExtra(Constant.NAME_ARTIST_ENTER_KEY, artist_data.name );
-
-                startActivity(intent);
+//
+//                Intent intent = new Intent(getActivity(), DisplayTop10TrackActivity.class)
+//                        .putExtra(Intent.EXTRA_TEXT, artist_data.spotifyId)
+//                        .putExtra(Constant.NAME_ARTIST_ENTER_KEY, artist_data.name );
+//                startActivity(intent);
+                mCallBack.onItemSelected(artist_data);
 
             }
         });
@@ -203,5 +235,13 @@ public class MainActivityFragment extends Fragment {
 
     void ToastText(String s){
         Toast.makeText(getActivity(),s, Toast.LENGTH_SHORT).show();
+    }
+
+
+    public void setActivateOnItemClick(boolean activateOnItemClick) {
+        _listView.setChoiceMode(activateOnItemClick
+                ? ListView.CHOICE_MODE_SINGLE
+                : ListView.CHOICE_MODE_NONE);
+
     }
 }

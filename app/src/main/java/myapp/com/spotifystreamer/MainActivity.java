@@ -1,28 +1,40 @@
 package myapp.com.spotifystreamer;
 
-import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import myapp.com.spotifystreamer.models.ArtistResult;
 
-public class MainActivity extends ActionBarActivity {
 
-    private static final String FRAGMENT = "frament";
-    private Fragment mFragment;
+public class MainActivity extends AppCompatActivity implements MainActivityFragment.Callbacks {
+
+//    private static final String FRAGMENT = "frament";
+//    private Fragment mFragment;
+    private static final String DETAILFRAGMENT_TAG = "DFTAG";
+
+    private boolean mTwoPane;
+    private String mLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-//        if (savedInstanceState == null) {
-//            mFragment = new Fragment();
-//            getFragmentManager().beginTransaction()
-//                    .add(R.id.fragment, mFragment).commit();
-//        }
+        if (findViewById(R.id.artist_details_container) != null) {
+            mTwoPane = true;
+
+            ((MainActivityFragment) getSupportFragmentManager()
+                    .findFragmentById(R.id.artist_search_container))
+                    .setActivateOnItemClick(true);
+
+
+        }else {
+            if (savedInstanceState == null)
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment, MainActivityFragment.getInstance()).commit();
+        }
     }
 
 
@@ -49,18 +61,19 @@ public class MainActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-//    @Override
-//    protected void onSaveInstanceState(Bundle outState) {
-//        super.onSaveInstanceState(outState);
-//        getFragmentManager().putFragment(outState, FRAGMENT, mFragment);
-//    }
-//
-//    @Override
-//    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-//        super.onRestoreInstanceState(savedInstanceState);
-//
-//        if(savedInstanceState != null) {
-//            mFragment = getFragmentManager().getFragment(savedInstanceState, FRAGMENT);
-//        }
-//    }
+    @Override
+    public void onItemSelected(ArtistResult artist) {
+        if (mTwoPane){
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.artist_details_container, DisplayTop10TrackActivityFragment.getInstance(artist.spotifyId, mTwoPane))
+                    .commit();
+        }else {
+            Intent intent = new Intent(this,DisplayTop10TrackActivity.class);
+            intent.putExtra(Constant.ARTIST_NAME_KEY,artist.name);
+            intent.putExtra(Constant.ARTIST_ID_KEY,artist.spotifyId);
+            intent.putExtra(Constant.IS_TWO_PANE,mTwoPane);
+            this.startActivity(intent);
+
+        }
+    }
 }

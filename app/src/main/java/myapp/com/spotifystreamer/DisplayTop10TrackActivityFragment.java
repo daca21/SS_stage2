@@ -4,7 +4,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -39,18 +41,26 @@ public class DisplayTop10TrackActivityFragment extends Fragment {
     public static String data_artist_name;
     private String LOG_TAG = DisplayTop10TrackActivity.class.getSimpleName();
 
-    private String data;
-    private static String artistName = null;
+//    private String data;
+//    private static String artistName = null;
     ArrayList<TrackResult> arrayOfTracks;
     TrackResult _trackResult;
     TopTrackAdapter mAdapter;
-
+    private boolean mTwoPane;
+    private String artistID;
 
 
     @InjectView(android.R.id.list)
     protected ListView _listView;
 
-    public DisplayTop10TrackActivityFragment() {
+    public static DisplayTop10TrackActivityFragment getInstance(String spotifyId, boolean mTwoPane) {
+        DisplayTop10TrackActivityFragment newTop10Frament = new DisplayTop10TrackActivityFragment();
+        Bundle bundle =  new Bundle();
+        bundle.putString(Constant.ARTIST_ID_KEY, spotifyId);
+        bundle.putBoolean(Constant.IS_TWO_PANE, mTwoPane);
+        newTop10Frament.setArguments(bundle);
+
+        return  newTop10Frament;
     }
 
     @Override
@@ -61,18 +71,20 @@ public class DisplayTop10TrackActivityFragment extends Fragment {
         ButterKnife.inject(this, rootView);
 
         // The display Activity called via intent.  Inspect the intent for forecast data.
-        Intent intent = getActivity().getIntent();
-        if (intent != null && intent.hasExtra(Intent.EXTRA_TEXT)) {
-            data = intent.getStringExtra(Intent.EXTRA_TEXT);
-            if (intent.hasExtra(Constant.NAME_ARTIST_ENTER_KEY)){
-//                Log.d(LOG_TAG, "success getintent "+ intent.getStringExtra(NAME_ARTIST_ENTER_KEY) );
-                data_artist_name = intent.getStringExtra(Constant.NAME_ARTIST_ENTER_KEY);
+//        Intent intent = getActivity().getIntent();
+//        if (intent != null && intent.hasExtra(Intent.EXTRA_TEXT)) {
+//            data = intent.getStringExtra(Intent.EXTRA_TEXT);
+//            if (intent.hasExtra(Constant.NAME_ARTIST_ENTER_KEY)){
+////                Log.d(LOG_TAG, "success getintent "+ intent.getStringExtra(NAME_ARTIST_ENTER_KEY) );
+//                data_artist_name = intent.getStringExtra(Constant.NAME_ARTIST_ENTER_KEY);
+//
+//            }
+////            To see debug spotify id
+////            ((TextView) rootView.findViewById(R.id.detail_text))
+////                    .setText(data);
+//        }
 
-            }
-//            To see debug spotify id
-//            ((TextView) rootView.findViewById(R.id.detail_text))
-//                    .setText(data);
-        }
+        mTwoPane = getArguments().getBoolean(Constant.IS_TWO_PANE);
 
         if(savedInstanceState != null) {
             // read arrayOfTracks list from the saved state
@@ -82,8 +94,9 @@ public class DisplayTop10TrackActivityFragment extends Fragment {
             _listView.setAdapter(mAdapter);
         } else {
             // load the top 10 track
+            artistID = getArguments().getString(Constant.ARTIST_ID_KEY);
             arrayOfTracks = new ArrayList<>();
-            searchTop10Track();
+            searchTop10Track(artistID);
         }
 
         //onClick item show the track selected
@@ -92,27 +105,28 @@ public class DisplayTop10TrackActivityFragment extends Fragment {
             public void onItemClick(AdapterView<?> adapter, View view, int position, long id) {
                 Log.d(LOG_TAG, "Clicked on postion" + position);
 //                mPosition = position;
-                TrackResult track_data = mAdapter.getItem(position);
+//                TrackResult track_data = mAdapter.getItem(position);
+                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                DialogFragment newFragment = new TrackSelectedActivityFragment();
 
                 Bundle bundle = new Bundle();
                 bundle.putInt("position", position);
                 bundle.putParcelableArrayList("tracks", arrayOfTracks);
-//                newFragment.setArguments(bundle);
+                newFragment.setArguments(bundle);
 
-                Intent intent = new Intent(getActivity(), TrackSelectedActivity.class)
-//                        .putExtra(Constant.NAME_ARTIST_ENTER_KEY, data_artist_name)
-//                        .putExtra(Constant.ARTIST_NAME_KEY, track_data.album_name)
-//                        .putExtra(Constant.URL_IMAGE_KEY, track_data.thumbnail_large)
-//                        .putExtra(Constant.TRACK_NAME_KEY, track_data.track_name)
-//                        .putExtra(Constant.DURATION_MS_KEY, track_data.duration_ms)
-//                        .putExtra(Constant.URL_PREVIEW_KEY, track_data.preview_url)
-                        .putExtras(bundle);
-                startActivity(intent);
-
+                if ( mTwoPane){
+                    newFragment.show(fragmentManager, "dialog");
+                }
+                else{
+                    Intent intent = new Intent(getActivity(), TrackSelectedActivity.class)
+                            .putExtras(bundle);
+                    startActivity(intent);
+                }
             }
         });
         return rootView;
     }
+
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -127,7 +141,7 @@ public class DisplayTop10TrackActivityFragment extends Fragment {
 //        serachTop10Track();
     }
 
-    private void searchTop10Track() {
+    private void searchTop10Track(final String id) {
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
         String location = prefs.getString(getString(R.string.pref_location_key),
@@ -144,7 +158,7 @@ public class DisplayTop10TrackActivityFragment extends Fragment {
             mTrackoption.put("country", location);
         }
 
-        spotify.getArtistTopTrack(data, mTrackoption, new Callback<Tracks>() {
+        spotify.getArtistTopTrack(id, mTrackoption, new Callback<Tracks>() {
             @Override
             public void success(Tracks tracks, Response response) {
                 Log.d(LOG_TAG, "success" + tracks.tracks.toString());
@@ -159,7 +173,7 @@ public class DisplayTop10TrackActivityFragment extends Fragment {
                 String previewURL;
 //                String artistname = null;
 
-                if(tracksList.size() == 0){
+                if (tracksList.size() == 0) {
                     Utils.showToastFromBackground(getResources().getString(R.string.tracks_empty), getActivity());
                 }
 
@@ -171,10 +185,9 @@ public class DisplayTop10TrackActivityFragment extends Fragment {
                     previewURL = obj.preview_url;
 
                     for (Image imtemp : obj.album.images) {
-                        if (imtemp.height > 400 ) {
+                        if (imtemp.height > 400) {
                             thumbnail_Large = imtemp.url.toString();
-                        }
-                        else if (imtemp.height > 200)
+                        } else if (imtemp.height > 200)
                             thumbnail_Small = imtemp.url.toString();
                     }
                     _trackResult = new TrackResult(track_name, album_name, thumbnail_Large,
@@ -192,7 +205,7 @@ public class DisplayTop10TrackActivityFragment extends Fragment {
                         _listView.setAdapter(mAdapter);
 
                     }
-                } );
+                });
             }
 
             @Override
@@ -203,5 +216,7 @@ public class DisplayTop10TrackActivityFragment extends Fragment {
         });
 
     }
+
+
 
 }

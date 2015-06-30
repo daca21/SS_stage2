@@ -7,8 +7,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.net.ConnectivityManager;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 import android.view.LayoutInflater;
@@ -31,11 +31,10 @@ import butterknife.OnClick;
 import myapp.com.spotifystreamer.models.TrackResult;
 import myapp.com.spotifystreamer.service.myPlayService;
 
-
 /**
  * A placeholder fragment containing a simple view.
  */
-public class TrackSelectedActivityFragment extends android.support.v4.app.DialogFragment implements OnSeekBarChangeListener{
+public class TrackSelectedActivityFragment extends DialogFragment implements OnSeekBarChangeListener{
 
     private String LOg_TAG = TrackSelectedActivityFragment.class.getSimpleName();
 
@@ -154,7 +153,7 @@ public class TrackSelectedActivityFragment extends android.support.v4.app.Dialog
             boolMusicPlaying = true;
         }else{
             togglePlayButton(true);
-            boolMusicPlaying = true;
+            boolMusicPlaying = false;
         }
     }
 
@@ -183,7 +182,7 @@ public class TrackSelectedActivityFragment extends android.support.v4.app.Dialog
         } else {
             stopMyPlayService();
             position = position - 1;
-            playAudio(position);
+            playAudio(strAudioLink);
             initViews(position);
         }
     }
@@ -219,7 +218,7 @@ public class TrackSelectedActivityFragment extends android.support.v4.app.Dialog
             stopMyPlayService();
             position = position +1;
             initViews(position);
-            playAudio(position);
+            playAudio(strAudioLink);
 //            buttonPlayStop.setBackgroundResource(R.drawable.ic_pause_black_48dp);
         }
     }
@@ -240,7 +239,7 @@ public class TrackSelectedActivityFragment extends android.support.v4.app.Dialog
     private void buttonPlayStopClick() {
         if (!boolMusicPlaying) {
             togglePlayButton(false);
-            playAudio(position);
+            playAudio(strAudioLink);
             boolMusicPlaying = true;
         } else {
             if (boolMusicPlaying) {
@@ -296,12 +295,12 @@ public class TrackSelectedActivityFragment extends android.support.v4.app.Dialog
     }
 
     // --- Start service and play music ---
-    private void playAudio(int position) {
+    private void playAudio(String audioLink) {
 
-        checkConnectivity();
+        isOnline = Utils.checkConnectivity(getActivity());
         if (isOnline) {
             stopMyPlayService();
-            serviceIntent.putExtra("sentAudioLink", strAudioLink);
+            serviceIntent.putExtra("sentAudioLink", audioLink);
 
             try {
                 getActivity().startService(serviceIntent);
@@ -380,17 +379,17 @@ public class TrackSelectedActivityFragment extends android.support.v4.app.Dialog
         }
     };
 
-    private void checkConnectivity() {
-        ConnectivityManager cm = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
-
-        if (cm.getNetworkInfo(ConnectivityManager.TYPE_MOBILE)
-                .isConnectedOrConnecting()
-                || cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI)
-                .isConnectedOrConnecting())
-            isOnline = true;
-        else
-            isOnline = false;
-    }
+//    private void checkConnectivity() {
+//        ConnectivityManager cm = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+//
+//        if (cm.getNetworkInfo(ConnectivityManager.TYPE_MOBILE)
+//                .isConnectedOrConnecting()
+//                || cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI)
+//                .isConnectedOrConnecting())
+//            isOnline = true;
+//        else
+//            isOnline = false;
+//    }
 
     // -- onPause, unregister broadcast receiver. To improve, also save screen data ---
     @Override

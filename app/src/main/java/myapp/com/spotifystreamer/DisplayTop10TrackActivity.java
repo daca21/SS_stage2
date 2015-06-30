@@ -11,14 +11,26 @@ import android.view.MenuItem;
 
 public class DisplayTop10TrackActivity extends ActionBarActivity {
 
+    private boolean isTwoPan;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 //        actionBarSetup();
         setContentView(R.layout.activity_display_top10_track);
 //        actionBarSetup("ddd");
-        actionBarSetup(DisplayTop10TrackActivityFragment.data_artist_name);
+//        actionBarSetup(DisplayTop10TrackActivityFragment.data_artist_name);
 
+        if (savedInstanceState==null) {
+            isTwoPan = getIntent().getBooleanExtra(Constant.IS_TWO_PANE,false);
+
+            String artistID = getIntent().getStringExtra(Constant.ARTIST_ID_KEY);
+            String artistName = getIntent().getStringExtra(Constant.ARTIST_NAME_KEY);
+            actionBarSetup(artistName);
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fragmentTracks, DisplayTop10TrackActivityFragment.getInstance(artistID, isTwoPan))
+                    .commit();
+        }
     }
 
 
