@@ -27,8 +27,9 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
             mTwoPane = true;
 
             ((MainActivityFragment) getSupportFragmentManager()
-                    .findFragmentById(R.id.item_list))
+                    .findFragmentById(R.id.artist_search_container))
                     .setActivateOnItemClick(true);
+
 
         }else {
             if (savedInstanceState == null)
