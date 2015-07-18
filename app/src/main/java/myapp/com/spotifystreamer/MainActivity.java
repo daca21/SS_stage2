@@ -32,10 +32,11 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
 
 
         }else {
+            mTwoPane = false;
             if (savedInstanceState == null)
                 getSupportFragmentManager()
                         .beginTransaction()
-                        .replace(R.id.fragment, MainActivityFragment.getInstance())
+                        .replace(R.id.container, MainActivityFragment.getInstance())
                         .commit();
         }
     }
