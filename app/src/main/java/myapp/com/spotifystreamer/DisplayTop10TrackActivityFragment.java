@@ -63,6 +63,8 @@ public class DisplayTop10TrackActivityFragment extends Fragment {
         return  newTop10Frament;
     }
 
+
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -70,21 +72,15 @@ public class DisplayTop10TrackActivityFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_display_top10_track, container, false);
         ButterKnife.inject(this, rootView);
 
-        // The display Activity called via intent.  Inspect the intent for forecast data.
-//        Intent intent = getActivity().getIntent();
-//        if (intent != null && intent.hasExtra(Intent.EXTRA_TEXT)) {
-//            data = intent.getStringExtra(Intent.EXTRA_TEXT);
-//            if (intent.hasExtra(Constant.NAME_ARTIST_ENTER_KEY)){
-////                Log.d(LOG_TAG, "success getintent "+ intent.getStringExtra(NAME_ARTIST_ENTER_KEY) );
-//                data_artist_name = intent.getStringExtra(Constant.NAME_ARTIST_ENTER_KEY);
-//
-//            }
-////            To see debug spotify id
-////            ((TextView) rootView.findViewById(R.id.detail_text))
-////                    .setText(data);
-//        }
 
         mTwoPane = getArguments().getBoolean(Constant.IS_TWO_PANE);
+        artistID = getArguments().getString(Constant.ARTIST_ID_KEY);
+        if(artistID != null) {
+            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.putString("artID", artistID);
+            editor.apply();
+        }
 
         if(savedInstanceState != null) {
             // read arrayOfTracks list from the saved state
@@ -94,9 +90,13 @@ public class DisplayTop10TrackActivityFragment extends Fragment {
             _listView.setAdapter(mAdapter);
         } else {
             // load the top 10 track
-            artistID = getArguments().getString(Constant.ARTIST_ID_KEY);
             arrayOfTracks = new ArrayList<>();
+            if(artistID == null){
+                SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+                artistID = preferences.getString("artID", "");
+            }
             searchTop10Track(artistID);
+
         }
 
         //onClick item show the track selected
@@ -130,6 +130,7 @@ public class DisplayTop10TrackActivityFragment extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         outState.putParcelableArrayList(Constant.TOP_TRACK_KEY, arrayOfTracks);
+        outState.putString("artistID", artistID);
         super.onSaveInstanceState(outState);
     }
 
@@ -138,6 +139,7 @@ public class DisplayTop10TrackActivityFragment extends Fragment {
         super.onResume();
 //        To debug
 //        serachTop10Track();
+
     }
 
     private void searchTop10Track(final String id) {

@@ -297,7 +297,8 @@ public class TrackSelectedActivityFragment extends DialogFragment implements OnS
     // --- Start service and play music ---
     private void playAudio(String audioLink) {
 
-        isOnline = Utils.checkConnectivity(getActivity());
+//        isOnline = Utils.checkConnectivity(getActivity());
+        isOnline = Utils.isNetworkAvailable(getActivity());
         if (isOnline) {
             stopMyPlayService();
             serviceIntent.putExtra("sentAudioLink", audioLink);
