@@ -75,12 +75,12 @@ public class DisplayTop10TrackActivityFragment extends Fragment {
 
         mTwoPane = getArguments().getBoolean(Constant.IS_TWO_PANE);
         artistID = getArguments().getString(Constant.ARTIST_ID_KEY);
-        if(artistID != null) {
-            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-            SharedPreferences.Editor editor = preferences.edit();
-            editor.putString("artID", artistID);
-            editor.apply();
-        }
+//        if(artistID != null) {
+//            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+//            SharedPreferences.Editor editor = preferences.edit();
+//            editor.putString("artID", artistID);
+//            editor.apply();
+//        }
 
         if(savedInstanceState != null) {
             // read arrayOfTracks list from the saved state
@@ -91,10 +91,10 @@ public class DisplayTop10TrackActivityFragment extends Fragment {
         } else {
             // load the top 10 track
             arrayOfTracks = new ArrayList<>();
-            if(artistID == null){
-                SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-                artistID = preferences.getString("artID", "");
-            }
+//            if(artistID == null){
+//                SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+//                artistID = preferences.getString("artID", "");
+//            }
             searchTop10Track(artistID);
 
         }
